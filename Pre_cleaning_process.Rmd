@@ -1,0 +1,78 @@
+---
+title: "Student_Data_Cleaning"
+author: "Diane Hoang"
+date: "2024-05-13"
+output: html_document
+---
+
+```{r}
+## This is how I made the df_clean. dataset. I also made the code to show the data easier called column_info_df. It's easier to show to clients.
+
+```
+
+
+```{r}
+df <- Student_Data
+
+```
+
+```{r}
+
+# Function to store column names, unique values, data type, and number of null values in a data frame
+get_column_info_df <- function(df) {
+  column_info <- data.frame(Column_Name = character(),
+                            Unique_Values = character(),
+                            Data_Type = character(),
+                            Num_Null = integer(),
+                            stringsAsFactors = FALSE)
+  for (col in names(df)) {
+    if (is.numeric(df[[col]])) {
+      unique_values <- paste(unique(df[[col]]), collapse = ", ")
+      data_type <- "Numeric"
+    } else {
+      unique_values <- paste(unique(as.character(df[[col]])), collapse = ", ")
+      data_type <- "Character"
+    }
+    num_null <- sum(is.na(df[[col]]))
+    column_info[nrow(column_info) + 1, ] <- list(col, unique_values, data_type, num_null)
+  }
+  return(column_info)
+}
+
+# Call the function to get column info as a data frame
+column_info_df <- get_column_info_df(df)
+
+# Print the data frame
+print(column_info_df)
+
+```
+
+```{r}
+# Install and load the xlsx package if not already installed
+if (!requireNamespace("xlsx", quietly = TRUE)) {
+  install.packages("xlsx")
+}
+library(openxlsx)
+
+# Define the file path for the Excel file
+file_path <- "/Users/dianehoang/Documents/Team 7/column_info.xlsx"
+
+# Write the data frame to an Excel file
+write.xlsx(column_info_df, file_path, row.names = FALSE)
+
+# Print a message indicating the file has been saved
+cat("Excel file saved successfully to:", file_path, "\n")
+
+```
+
+```{r}
+## Remove Birthdate, Dropout
+
+df_clean <- subset(df,select = -c(birth_dt, Dropout))
+```
+
+```{r}
+filePath <- "/Users/dianehoang/Documents/Team 7/df_clean.csv"
+write.csv(df_clean, filePath, row.names = FALSE)
+
+```

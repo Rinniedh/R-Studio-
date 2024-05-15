@@ -1,0 +1,128 @@
+---
+title: "Data_Cleaning in R When there is alot of NULL or NA"
+author: "Diane Hoang"
+date: "2024-05-15"
+output: html_document
+---
+
+```{r}
+## I always interview with the client prior to data cleaning to make sure I clean in a way that doesn't lose valuable information collected by the client. For example I can't show this dataset but I will let you know there was alot of NULL and NA in this data. Determining how we can transform that data instead of removing it will not cut out valuable information.
+
+```
+
+```{r}
+
+# Changing NA or NULL to U which stands for unspecified or undisclosed
+df_clean$EntryGenderCode[df_clean$EntryGenderCode == "NA"] <- "U"
+df_clean$first_generation[df_clean$first_generation == "NULL"] <- "U"
+df_clean$first_gen_group[df_clean$first_gen_group == "NULL"] <- "U"
+
+```
+
+```{r}
+## changing NULL to 0  because they are either 0 or 1 if they are NULL they should of been classified as 0
+
+df_clean$RetainedTerm02[df_clean$RetainedTerm02 == "NULL"] <- "0"
+df_clean$RetainedTerm03[df_clean$RetainedTerm03 == "NULL"] <- "0"
+df_clean$RetainedTerm04[df_clean$RetainedTerm04 == "NULL"] <- "0"
+df_clean$Retained01YearLater[df_clean$Retained01YearLater == "NULL"] <- "0"
+df_clean$Retained02YearLater[df_clean$Retained02YearLater == "NULL"] <- "0"
+
+```
+
+```{r}
+
+## Changing NULL to N, N means didn't graduate, so N means No.
+
+df_clean$Graduated_yrqtr[df_clean$Graduated_yrqtr == "NULL"] <- "N"
+df_clean$Graduated_acayr[df_clean$Graduated_acayr == "NULL"] <- "N"
+df_clean$DegreeGrantedTotalCredits[df_clean$DegreeGrantedTotalCredits == "NULL"] <- "N"
+df_clean$DegreeGrantedTransferCredits[df_clean$DegreeGrantedTransferCredits == "NULL"] <- "N"
+df_clean$DegreeGrantedUWEarnedCredits[df_clean$DegreeGrantedUWEarnedCredits == "NULL"] <- "N"
+df_clean$DegreeGrantedAddtnlAppliedCredits[df_clean$DegreeGrantedAddtnlAppliedCredits == "NULL"] <- "N"
+
+```
+
+```{r}
+## changing NULL to IP which stands for in progress
+
+df_clean$GraduatedByYear01[df_clean$GraduatedByYear01 == "NULL"] <- "IP"
+df_clean$GraduatedByYear02[df_clean$GraduatedByYear02 == "NULL"] <- "IP"
+df_clean$GraduatedByYear03[df_clean$GraduatedByYear03 == "NULL"] <- "IP"
+df_clean$GraduatedByYear04[df_clean$GraduatedByYear04 == "NULL"] <- "IP"
+df_clean$GraduatedByYear05[df_clean$GraduatedByYear05 == "NULL"] <- "IP"
+df_clean$GraduatedByYear06[df_clean$GraduatedByYear06 == "NULL"] <- "IP"
+
+
+```
+
+```{r}
+
+## changing NULL to N because it stands for didn't graduate yet
+df_clean$TimeToDegreeInMonths[df_clean$TimeToDegreeInMonths == "NULL"] <- "N"
+df_clean$TimeToDegreeInYears[df_clean$TimeToDegreeInYears == "NULL"] <- "N"
+df_clean$TimeToDegreeGroup[df_clean$TimeToDegreeGroup == "NULL"] <- "N"
+```
+
+```{r}
+# Changing NULL or NA to NDM which means Not Declared Major
+df_clean$second_year_college[df_clean$second_year_college == "NULL"] <- "NDM"
+df_clean$second_year_dept[df_clean$second_year_dept == "NULL"] <- "NDM"
+df_clean$second_year_major[df_clean$second_year_major == "NA"] <- "NDM"
+```
+
+```{r}
+## Changing NULL to NYS which stands for Not Yet Second Year
+df_clean$second_year_class_code[df_clean$second_year_class_code == "NULL"] <- "NYS"
+df_clean$second_year_ncr_code[df_clean$second_year_ncr_code == "NULL"] <- "NYS"
+df_clean$second_year_tot_credits[df_clean$second_year_tot_credits == "NULL"] <- "NYS"
+```
+
+```{r}
+## Changing NULL to N because they should of never been NULL in the first place for this column
+
+df_clean$FeeBasedMajorInd[df_clean$FeeBasedMajorInd == "NULL"] <- "N"
+df_clean$FederalSTEMInd[df_clean$FederalSTEMInd == "NULL"] <- "N"
+df_clean$WAStateOFMSTEMInd[df_clean$WAStateOFMSTEMInd == "NULL"] <- "N"
+df_clean$WAStateHighDemandInd[df_clean$WAStateHighDemandInd == "NULL"] <- "N"
+```
+
+```{r}
+## changing NULL to NGPA which stands for No GPA or it isn't assigned yet
+df_clean$CensusDayCumGPA[df_clean$CensusDayCumGPA == "NULL"] <- "NGPA"
+```
+
+```{r}
+# Initialize an empty dataframe to store column names and unique values
+column_unique_df <- data.frame(Column_Name = character(), Unique_Values = character(), stringsAsFactors = FALSE)
+
+# Iterate through each column in df_clean
+for (col in names(df_clean)) {
+  # Get unique values in the column
+  unique_values <- unique(df_clean[[col]])
+  
+  # Combine column name and unique values into a data frame
+  col_df <- data.frame(Column_Name = col, Unique_Values = paste(unique_values, collapse = ", "), stringsAsFactors = FALSE)
+  
+  # Append to the main dataframe
+  column_unique_df <- rbind(column_unique_df, col_df)
+}
+
+# Reset row names
+rownames(column_unique_df) <- NULL
+
+# Print the dataframe
+print(column_unique_df)
+
+```
+
+```{r}
+
+# Specify the filepath where you want to save the CSV file
+filepath <- "/Users/dianehoang/Documents/Team 7/df_cleanv1.csv"
+
+# Save the dataframe as a CSV file to the specified filepath
+write.csv(df_clean, file = filepath, row.names = FALSE)
+
+
+```
